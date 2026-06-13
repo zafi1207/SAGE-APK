@@ -1,0 +1,6 @@
+{
+  "name": "SAGE",
+  "description": "Life Finance Companion - offline-first smart priority allocation tracker",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
