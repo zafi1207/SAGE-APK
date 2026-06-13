@@ -8,12 +8,12 @@ plugins {
 
 android {
   namespace = "com.example"
-  compileSdk { version = release(36) { minorApiLevel = 1 } }
+  compileSdk = 35
 
   defaultConfig {
     applicationId = "com.aistudio.sage.pxtwrq"
     minSdk = 24
-    targetSdk = 36
+    targetSdk = 35
     versionCode = 1
     versionName = "1.0"
 
@@ -121,8 +121,8 @@ dependencies {
 }
 
 val srcApkFile = layout.buildDirectory.file("outputs/apk/debug/app-debug.apk")
-val destApk1 = rootProject.layout.projectDirectory.file(".build-outputs/app-debug.apk")
-val destApk2 = rootProject.layout.projectDirectory.file("APK_DOWNLOAD/app-debug.apk")
+val destApk1 = rootProject.layout.projectDirectory.file(".build-outputs/SAGE-app-debug.apk")
+val destApk2 = rootProject.layout.projectDirectory.file("APK_DOWNLOAD/SAGE-installable-app.apk")
 
 tasks.register("copyApk") {
   dependsOn("assembleDebug")
@@ -141,9 +141,11 @@ tasks.register("copyApk") {
     if (srcFile.exists()) {
       srcFile.copyTo(dstFile1, overwrite = true)
       srcFile.copyTo(dstFile2, overwrite = true)
+      println("FINAL_SIZE: ${dstFile1.length()} / 1024 = ${dstFile1.length() / 1024} KB")
     }
   }
 }
+
 
 afterEvaluate {
   tasks.named("assembleDebug") {
