@@ -55,27 +55,57 @@ object NotificationHelper {
 
         Log.d(TAG, "Scheduling daily alarm at: ${calendar.time}")
 
+        var hasExactAlarmPermission = true
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            hasExactAlarmPermission = alarmManager.canScheduleExactAlarms()
+        }
+
         try {
+            if (hasExactAlarmPermission) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    alarmManager.setExactAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        calendar.timeInMillis,
+                        pendingIntent
+                    )
+                } else {
+                    alarmManager.setExact(
+                        AlarmManager.RTC_WAKEUP,
+                        calendar.timeInMillis,
+                        pendingIntent
+                    )
+                }
+            } else {
+                Log.d(TAG, "Exact alarms permission not granted, scheduling inexact daily alarm.")
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    alarmManager.setAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        calendar.timeInMillis,
+                        pendingIntent
+                    )
+                } else {
+                    alarmManager.set(
+                        AlarmManager.RTC_WAKEUP,
+                        calendar.timeInMillis,
+                        pendingIntent
+                    )
+                }
+            }
+        } catch (e: SecurityException) {
+            Log.w(TAG, "SecurityException while scheduling exact alarm, falling back to inexact.", e)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarmManager.setExactAndAllowWhileIdle(
+                alarmManager.setAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
                     calendar.timeInMillis,
                     pendingIntent
                 )
             } else {
-                alarmManager.setExact(
+                alarmManager.set(
                     AlarmManager.RTC_WAKEUP,
                     calendar.timeInMillis,
                     pendingIntent
                 )
             }
-        } catch (e: SecurityException) {
-            Log.e(TAG, "Failed to schedule exact alarm, falling back to inexact.", e)
-            alarmManager.set(
-                AlarmManager.RTC_WAKEUP,
-                calendar.timeInMillis,
-                pendingIntent
-            )
         }
     }
 
