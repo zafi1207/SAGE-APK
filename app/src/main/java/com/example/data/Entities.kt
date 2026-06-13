@@ -72,5 +72,6 @@ data class SettingsEntity(
     val kosTarget: Double = 2000000.0,
     val kosRamaContribution: Double = 0.0, // Running reserved rent
     val kosNadiyaContribution: Double = 0.0, // Running reserved rent
-    val themeMode: String = "Light" // "Light", "Dark", "System"
+    val themeMode: String = "Light", // "Light", "Dark", "System"
+    val isNotificationsEnabled: Boolean = true
 )

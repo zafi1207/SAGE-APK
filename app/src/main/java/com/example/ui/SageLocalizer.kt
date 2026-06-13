@@ -75,7 +75,10 @@ object SageLocalizer {
         "unallocated" to "Unallocated",
         "bill_added_msg" to "Bill Added successfully!",
         "bill_updated_msg" to "Bill Updated successfully!",
-        "bill_deleted_msg" to "Bill Deleted successfully!"
+        "bill_deleted_msg" to "Bill Deleted successfully!",
+        "notifications" to "Notifications",
+        "enable_notifications" to "Enable Notifications",
+        "notifications_desc" to "Receive alert reminders for offline unpaid bills."
     )
 
     private val id = mapOf(
@@ -152,7 +155,10 @@ object SageLocalizer {
         "unallocated" to "Sisa bebas",
         "bill_added_msg" to "Tagihan berhasil ditambahkan!",
         "bill_updated_msg" to "Tagihan berhasil diperbarui!",
-        "bill_deleted_msg" to "Tagihan berhasil dihapus!"
+        "bill_deleted_msg" to "Tagihan berhasil dihapus!",
+        "notifications" to "Notifikasi",
+        "enable_notifications" to "Aktifkan Notifikasi",
+        "notifications_desc" to "Terima pengingat peringatan untuk tagihan belum lunas secara offline."
     )
 
     fun t(key: String, lang: String): String {

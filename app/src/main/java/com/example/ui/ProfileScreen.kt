@@ -357,6 +357,52 @@ fun ProfileScreen(
             }
         }
 
+        // --- NOTIFICATIONS SETTING ---
+        item {
+            val notificationsEnabled by viewModel.isNotificationsEnabled.collectAsState()
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = SageLocalizer.t("notifications", lang),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = SageLocalizer.t("notifications_desc", lang),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.outline
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { viewModel.setNotificationsEnabled(!notificationsEnabled) }
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = SageLocalizer.t("enable_notifications", lang),
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Checkbox(
+                            checked = notificationsEnabled,
+                            onCheckedChange = { viewModel.setNotificationsEnabled(it) },
+                            modifier = Modifier.testTag("enable_notifications_checkbox")
+                        )
+                    }
+                }
+            }
+        }
+
         // --- BACKUP & EMERGENCY MAINTENANCE ---
         item {
             Text(

@@ -37,6 +37,17 @@ class SageViewModel(application: Application) : AndroidViewModel(application) {
         .map { it?.isCoupleMode ?: true }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
+    val isNotificationsEnabled: StateFlow<Boolean> = settings
+        .map { it?.isNotificationsEnabled ?: true }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+
+    private val _requestedTab = MutableStateFlow(0)
+    val requestedTab: StateFlow<Int> = _requestedTab.asStateFlow()
+
+    fun setRequestedTab(tab: Int) {
+        _requestedTab.value = tab
+    }
+
     // Forecast mode offset (In Days)
     private val _forecastOffsetDays = MutableStateFlow(0)
     val forecastOffsetDays: StateFlow<Int> = _forecastOffsetDays.asStateFlow()
@@ -95,6 +106,18 @@ class SageViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) {
             val s = repository.getSettingsInstance() ?: SettingsEntity()
             repository.updateSettings(s.copy(themeMode = mode))
+        }
+    }
+
+    fun setNotificationsEnabled(enabled: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val s = repository.getSettingsInstance() ?: SettingsEntity()
+            repository.updateSettings(s.copy(isNotificationsEnabled = enabled))
+            if (!enabled) {
+                com.example.notifications.NotificationHelper.cancelAllNotifications(getApplication())
+            } else {
+                com.example.notifications.NotificationHelper.checkAndShowNotifications(getApplication())
+            }
         }
     }
 
@@ -220,18 +243,21 @@ class SageViewModel(application: Application) : AndroidViewModel(application) {
                 )
                 repository.insertBill(b)
             }
+            com.example.notifications.NotificationHelper.checkAndShowNotifications(getApplication())
         }
     }
 
     fun editBill(bill: Bill) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.updateBill(bill)
+            com.example.notifications.NotificationHelper.checkAndShowNotifications(getApplication())
         }
     }
 
     fun deleteBill(bill: Bill) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.deleteBill(bill)
+            com.example.notifications.NotificationHelper.checkAndShowNotifications(getApplication())
         }
     }
 
@@ -277,12 +303,14 @@ class SageViewModel(application: Application) : AndroidViewModel(application) {
             } else {
                 repository.updateBill(bill.copy(isPaid = false, reservedAmount = 0.0, isCompleted = false))
             }
+            com.example.notifications.NotificationHelper.checkAndShowNotifications(getApplication())
         }
     }
 
     fun markBillCompleted(bill: Bill) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.updateBill(bill.copy(isCompleted = true))
+            com.example.notifications.NotificationHelper.checkAndShowNotifications(getApplication())
         }
     }
 

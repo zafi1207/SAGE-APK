@@ -13,8 +13,17 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()
+
+    // Initialize notification structures and schedule the daily alarm
+    com.example.notifications.NotificationHelper.createNotificationChannel(this)
+    com.example.notifications.NotificationHelper.scheduleDailyAlarm(this)
+
+    val viewModel = androidx.lifecycle.ViewModelProvider(this).get(com.example.viewmodel.SageViewModel::class.java)
+    if (intent?.getBooleanExtra("navigate_bills", false) == true) {
+      viewModel.setRequestedTab(1)
+    }
+
     setContent {
-      val viewModel: com.example.viewmodel.SageViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
       val themeMode by viewModel.themeMode.collectAsState()
       val darkTheme = when (themeMode) {
         "Light" -> false
@@ -24,6 +33,15 @@ class MainActivity : ComponentActivity() {
       MyApplicationTheme(darkTheme = darkTheme) {
         SageApp(viewModel = viewModel)
       }
+    }
+  }
+
+  override fun onNewIntent(intent: android.content.Intent) {
+    super.onNewIntent(intent)
+    setIntent(intent)
+    if (intent.getBooleanExtra("navigate_bills", false) == true) {
+      val viewModel = androidx.lifecycle.ViewModelProvider(this).get(com.example.viewmodel.SageViewModel::class.java)
+      viewModel.setRequestedTab(1)
     }
   }
 }
