@@ -120,17 +120,34 @@ dependencies {
   "ksp"(libs.moshi.kotlin.codegen)
 }
 
-tasks.register<Zip>("zipApk") {
+val srcApkFile = layout.buildDirectory.file("outputs/apk/debug/app-debug.apk")
+val destApk1 = rootProject.layout.projectDirectory.file(".build-outputs/app-debug.apk")
+val destApk2 = rootProject.layout.projectDirectory.file("APK_DOWNLOAD/app-debug.apk")
+
+tasks.register("copyApk") {
   dependsOn("assembleDebug")
-  from(layout.buildDirectory.dir("outputs/apk/debug")) {
-    include("app-debug.apk")
-  }
-  archiveFileName.set("app-debug-full.zip")
-  destinationDirectory.set(rootProject.layout.projectDirectory.dir("APK_DOWNLOAD"))
+  
+  val srcFile = srcApkFile.get().asFile
+  val dstFile1 = destApk1.asFile
+  val dstFile2 = destApk2.asFile
+  
+  inputs.file(srcFile)
+  outputs.file(dstFile1)
+  outputs.file(dstFile2)
   
   doLast {
-    val file1 = rootProject.layout.projectDirectory.file("APK_DOWNLOAD/app-debug-full.zip").asFile
-    println("VERIFICATION_ZIP_SIZE: ${file1.length()} bytes (${file1.length() / 1024 / 1024} MB)")
+    dstFile1.parentFile.mkdirs()
+    dstFile2.parentFile.mkdirs()
+    if (srcFile.exists()) {
+      srcFile.copyTo(dstFile1, overwrite = true)
+      srcFile.copyTo(dstFile2, overwrite = true)
+    }
+  }
+}
+
+afterEvaluate {
+  tasks.named("assembleDebug") {
+    finalizedBy("copyApk")
   }
 }
 
