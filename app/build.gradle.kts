@@ -39,11 +39,16 @@ android {
   buildTypes {
     release {
       isCrunchPngs = false
-      isMinifyEnabled = false
+      isMinifyEnabled = true
+      isShrinkResources = true
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-      signingConfig = signingConfigs.getByName("release")
+      signingConfig = signingConfigs.getByName("debugConfig")
     }
     debug {
+      isDebuggable = false
+      isMinifyEnabled = true
+      isShrinkResources = true
+      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       signingConfig = signingConfigs.getByName("debugConfig")
     }
   }
@@ -121,31 +126,33 @@ dependencies {
 }
 
 val srcApkFile = layout.buildDirectory.file("outputs/apk/debug/app-debug.apk")
-val destApk1 = rootProject.layout.projectDirectory.file(".build-outputs/SAGE-app-debug.apk")
 val destApk2 = rootProject.layout.projectDirectory.file("APK_DOWNLOAD/SAGE-installable-app.apk")
 
 tasks.register("copyApk") {
   dependsOn("assembleDebug")
   
   val srcFile = srcApkFile.get().asFile
-  val dstFile1 = destApk1.asFile
   val dstFile2 = destApk2.asFile
   
   inputs.file(srcFile)
-  outputs.file(dstFile1)
   outputs.file(dstFile2)
   
   doLast {
-    dstFile1.parentFile.mkdirs()
     dstFile2.parentFile.mkdirs()
     if (srcFile.exists()) {
-      srcFile.copyTo(dstFile1, overwrite = true)
       srcFile.copyTo(dstFile2, overwrite = true)
-      println("FINAL_SIZE: ${dstFile1.length()} / 1024 = ${dstFile1.length() / 1024} KB")
+      println("FINAL_SIZE: ${dstFile2.length()} / 1024 = ${dstFile2.length() / 1024} KB")
     }
   }
 }
 
+
+tasks.register("checkApkSize") {
+  doLast {
+    val f = rootProject.layout.projectDirectory.file("APK_DOWNLOAD/SAGE-installable-app.apk").asFile
+    println("APK SIZE IS: ${f.length()} bytes")
+  }
+}
 
 afterEvaluate {
   tasks.named("assembleDebug") {
